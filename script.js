@@ -1,13 +1,3 @@
-// Load Google Fonts
-WebFont.load({
-  google: {
-    families: ['Roboto', 'Lobster', 'Montserrat', 'Oswald', 'Pacifico', 'Dancing Script']
-  },
-  active: function () {
-    drawCanvas(); // Redraw the canvas after fonts are loaded
-  }
-});
-
 let uploadedImage = null;
 let uploadedFileName = 'quote-image.png';
 
@@ -100,6 +90,10 @@ function drawCanvas() {
       imgWidth,
       imgHeight
     );
+  } else {
+    // Fill the background if no image is uploaded
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
   // Draw Text
@@ -284,7 +278,8 @@ function getTouchDist(e) {
 }
 
 function isOverText(pos) {
-  // Set the font properties to match when drawing the text
+  if (!userText) return false;
+
   ctx.save();
   ctx.translate(textX, textY);
   ctx.rotate(textRotation);
@@ -306,7 +301,7 @@ function isOverText(pos) {
   const rectWidth = textWidth;
   const rectHeight = textHeight;
 
-  // Check if mouse position is within the rectangle
+  // Check if position is within the rectangle
   return (
     pos.x >= rectX &&
     pos.x <= rectX + rectWidth &&
@@ -332,17 +327,19 @@ function rotateText() {
 }
 
 function downloadImage() {
-  // Create a temporary canvas to generate the image at the desired dimensions
+  drawCanvas();
+
+  // Create a temporary canvas for the full-size image
   const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = 1080; // WhatsApp ideal width
-  tempCanvas.height = 1920; // WhatsApp ideal height
+  tempCanvas.width = 1080; // Ideal width for WhatsApp status
+  tempCanvas.height = 1920; // Ideal height for WhatsApp status
   const tempCtx = tempCanvas.getContext('2d');
 
-  // Scale factors
+  // Scale factors to adjust positions and sizes accordingly
   const scaleX = tempCanvas.width / canvas.width;
   const scaleY = tempCanvas.height / canvas.height;
 
-  // Draw Image
+  // Draw the image onto the temporary canvas
   if (uploadedImage) {
     const imgWidth = uploadedImage.width * imgScale * scaleX;
     const imgHeight = uploadedImage.height * imgScale * scaleY;
@@ -357,9 +354,13 @@ function downloadImage() {
       imgWidth,
       imgHeight
     );
+  } else {
+    // Fill the background if no image is uploaded
+    tempCtx.fillStyle = '#000000';
+    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
   }
 
-  // Draw Text
+  // Draw the text onto the temporary canvas
   if (userText) {
     tempCtx.save();
 
@@ -372,10 +373,10 @@ function downloadImage() {
     tempCtx.textAlign = 'center';
     tempCtx.textBaseline = 'middle';
 
-    let fontStyle = styles[currentStyleIndex];
-    let fontSize = 80;
+    const fontStyle = styles[currentStyleIndex];
+    const fontSize = 80;
+    const currentFont = fonts[currentFontIndex];
 
-    let currentFont = fonts[currentFontIndex];
     tempCtx.font = `${fontStyle} ${fontSize}px '${currentFont}'`;
 
     wrapAndDrawText(tempCtx, userText, 1000);
@@ -383,17 +384,21 @@ function downloadImage() {
     tempCtx.restore();
   }
 
-  // Save the image
+  // Convert the canvas to a data URL
+  const dataURL = tempCanvas.toDataURL('image/png');
+
+  // Create a temporary link element to initiate the download
   const link = document.createElement('a');
+  link.href = dataURL;
+  link.download = uploadedFileName.replace(/\.[^/.]+$/, '') + '.png';
 
-  // Use uploaded image's filename for download
-  const baseFileName = uploadedFileName.replace(/\.[^/.]+$/, ''); // Remove extension
-
-  link.download = baseFileName + '.png';
-
-  link.href = tempCanvas.toDataURL('image/png');
-
+  // Append the link to the body
   document.body.appendChild(link);
+
+  // Programmatically click the link to trigger the download
   link.click();
+
+  // Remove the link from the document
   document.body.removeChild(link);
 }
+
