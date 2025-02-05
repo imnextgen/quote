@@ -156,6 +156,8 @@ function addText() {
     return;
   }
   userText = textInput;
+  textX = canvas.width / 2;
+  textY = canvas.height / 2;
   drawCanvas();
 }
 
@@ -401,4 +403,3 @@ function downloadImage() {
   // Remove the link from the document
   document.body.removeChild(link);
 }
-
