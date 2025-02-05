@@ -1,3 +1,5 @@
+let uploadedImage = null;
+
 document.getElementById('imageUpload').addEventListener('change', loadImage);
 
 function loadImage(event) {
@@ -12,6 +14,7 @@ function loadImage(event) {
 
     // Draw image on canvas
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    uploadedImage = image; // Store the uploaded image
   };
 
   // Load the selected image
@@ -23,24 +26,22 @@ function generateQuoteImage() {
   const ctx = canvas.getContext('2d');
   const text = document.getElementById('quoteText').value;
 
-  // Redraw the uploaded image
-  const image = new Image();
-  image.src = canvas.toDataURL();
-  image.onload = function() {
-    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-  
-    // Set text properties
-    ctx.fillStyle = '#FFFFFF'; // Text color
-    ctx.font = '30px Arial'; // Font size and style
-    ctx.textAlign = 'center'; // Center-align the text
-    ctx.textBaseline = 'middle'; // Vertically center the text
-  
-    // Draw text
-    const lines = wrapText(ctx, text, canvas.width - 40);
-    lines.forEach((line, index) => {
-      ctx.fillText(line, canvas.width / 2, 50 + (index * 40));
-    });
-  };
+  if (uploadedImage) {
+    // Redraw the uploaded image
+    ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
+  }
+
+  // Set text properties
+  ctx.fillStyle = '#FFFFFF'; // Text color
+  ctx.font = '30px Arial'; // Font size and style
+  ctx.textAlign = 'center'; // Center-align the text
+  ctx.textBaseline = 'middle'; // Vertically center the text
+
+  // Draw text
+  const lines = wrapText(ctx, text, canvas.width - 40);
+  lines.forEach((line, index) => {
+    ctx.fillText(line, canvas.width / 2, canvas.height / 2 + (index * 40));
+  });
 }
 
 function wrapText(ctx, text, maxWidth) {
