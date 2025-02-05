@@ -47,12 +47,12 @@ canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
 canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
 canvas.addEventListener('touchend', handleTouchEnd);
 
-document.getElementById('quoteText').addEventListener('input', updateText);
-
+document.getElementById('addTextBtn').addEventListener('click', addText);
 document.getElementById('nextFontBtn').addEventListener('click', nextFont);
 document.getElementById('nextStyleBtn').addEventListener('click', nextStyle);
 
 document.getElementById('rotationSlider').addEventListener('input', rotateText);
+document.getElementById('downloadBtn').addEventListener('click', downloadImage);
 
 function loadImage(event) {
   const file = event.target.files[0];
@@ -118,7 +118,6 @@ function drawCanvas() {
     let fontStyle = styles[currentStyleIndex];
     let fontSize = 30;
 
-    // Correct font syntax
     let currentFont = fonts[currentFontIndex];
     ctx.font = `${fontStyle} ${fontSize}px '${currentFont}'`;
 
@@ -153,6 +152,17 @@ function wrapAndDrawText(ctx, text, maxWidth) {
     ctx.fillText(line, 0, y);
     y += lineHeight;
   });
+}
+
+function addText() {
+  // Get the text from the input field
+  const textInput = document.getElementById('quoteText').value.trim();
+  if (textInput === '') {
+    alert('Please enter a quote.');
+    return;
+  }
+  userText = textInput;
+  drawCanvas();
 }
 
 function handleMouseDown(e) {
@@ -288,24 +298,21 @@ function isOverText(pos) {
   const textWidth = metrics.width;
   const textHeight = fontSize; // Approximate height
 
-  // Coordinates relative to the rotated text
   ctx.restore();
 
+  // Create a rectangle around the text
   const rectX = textX - textWidth / 2;
   const rectY = textY - textHeight / 2;
+  const rectWidth = textWidth;
+  const rectHeight = textHeight;
 
-  // Simple bounding box check (works for non-rotated text)
+  // Check if mouse position is within the rectangle
   return (
     pos.x >= rectX &&
-    pos.x <= rectX + textWidth &&
+    pos.x <= rectX + rectWidth &&
     pos.y >= rectY &&
-    pos.y <= rectY + textHeight
+    pos.y <= rectY + rectHeight
   );
-}
-
-function updateText() {
-  userText = this.value;
-  drawCanvas();
 }
 
 function nextFont() {
