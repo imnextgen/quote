@@ -6,7 +6,7 @@ function loadImage(event) {
   const canvas = document.getElementById('statusCanvas');
   const ctx = canvas.getContext('2d');
   const image = new Image();
-  
+
   image.onload = function() {
     // Resize canvas to match the uploaded image
     canvas.width = image.width;
