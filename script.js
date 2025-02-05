@@ -2,23 +2,45 @@ let uploadedImage = null;
 
 document.getElementById('imageUpload').addEventListener('change', loadImage);
 
+async function enhanceImage(imageData) {
+  const response = await fetch('https://api.example.com/v1/enhance', { // Replace with actual API URL
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer YOUR_API_KEY' // Replace with your API key
+    },
+    body: JSON.stringify({
+      image: imageData,
+      tasks: [{ name: 'upscale' }] // Adjust based on the API's requirements
+    })
+  });
+
+  const result = await response.json();
+  return result.enhancedImage; // Adjust based on the API's response structure
+}
+
 function loadImage(event) {
-  const canvas = document.getElementById('statusCanvas');
-  const ctx = canvas.getContext('2d');
-  const image = new Image();
+  const file = event.target.files[0];
+  const reader = new FileReader();
 
-  image.onload = function() {
-    // Resize canvas to match the uploaded image
-    canvas.width = image.width;
-    canvas.height = image.height;
+  reader.onload = async function(e) {
+    const imageData = e.target.result;
+    const enhancedImage = await enhanceImage(imageData);
 
-    // Draw image on canvas
-    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-    uploadedImage = image; // Store the uploaded image
+    const canvas = document.getElementById('statusCanvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+    image.src = enhancedImage; // Use the enhanced image
+
+    image.onload = function() {
+      canvas.width = image.width;
+      canvas.height = image.height;
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      uploadedImage = image; // Store the enhanced image
+    };
   };
 
-  // Load the selected image
-  image.src = URL.createObjectURL(event.target.files[0]);
+  reader.readAsDataURL(file);
 }
 
 function generateQuoteImage() {
@@ -29,7 +51,7 @@ function generateQuoteImage() {
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Redraw the uploaded image
+  // Redraw the uploaded (enhanced) image
   if (uploadedImage) {
     ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
   }
