@@ -118,7 +118,9 @@ function drawCanvas() {
     let fontStyle = styles[currentStyleIndex];
     let fontSize = 30;
 
-    ctx.font = `${fontStyle} ${fontSize}px '${fonts[currentFontIndex]}'`;
+    // Correct font syntax
+    let currentFont = fonts[currentFontIndex];
+    ctx.font = `${fontStyle} ${fontSize}px '${currentFont}'`;
 
     wrapAndDrawText(ctx, userText, 300);
 
@@ -272,20 +274,27 @@ function getTouchDist(e) {
 }
 
 function isOverText(pos) {
+  // Set the font properties to match when drawing the text
   ctx.save();
   ctx.translate(textX, textY);
   ctx.rotate(textRotation);
 
-  ctx.font = `${styles[currentStyleIndex]} 30px '${fonts[currentFontIndex]}'`;
+  let fontStyle = styles[currentStyleIndex];
+  let fontSize = 30;
+  let currentFont = fonts[currentFontIndex];
+  ctx.font = `${fontStyle} ${fontSize}px '${currentFont}'`;
+
   const metrics = ctx.measureText(userText);
   const textWidth = metrics.width;
-  const textHeight = 30; // Approximate height
+  const textHeight = fontSize; // Approximate height
 
+  // Coordinates relative to the rotated text
   ctx.restore();
 
   const rectX = textX - textWidth / 2;
   const rectY = textY - textHeight / 2;
 
+  // Simple bounding box check (works for non-rotated text)
   return (
     pos.x >= rectX &&
     pos.x <= rectX + textWidth &&
@@ -359,7 +368,8 @@ function downloadImage() {
     let fontStyle = styles[currentStyleIndex];
     let fontSize = 80;
 
-    tempCtx.font = `${fontStyle} ${fontSize}px '${fonts[currentFontIndex]}'`;
+    let currentFont = fonts[currentFontIndex];
+    tempCtx.font = `${fontStyle} ${fontSize}px '${currentFont}'`;
 
     wrapAndDrawText(tempCtx, userText, 1000);
 
@@ -380,4 +390,3 @@ function downloadImage() {
   link.click();
   document.body.removeChild(link);
 }
-
