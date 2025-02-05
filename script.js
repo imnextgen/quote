@@ -17,13 +17,14 @@ const ctx = canvas.getContext('2d');
 let imgX = 0, imgY = 0;
 let imgScale = 1;
 let isDraggingImage = false;
-let startX, startY;
+let imgStartX, imgStartY;
 let lastDist = 0;
 
 let userText = '';
 let textX = canvas.width / 2;
 let textY = canvas.height / 2;
 let isDraggingText = false;
+let textStartX, textStartY;
 let textRotation = 0;
 
 let currentFontIndex = 0;
@@ -117,7 +118,7 @@ function drawCanvas() {
     let fontStyle = styles[currentStyleIndex];
     let fontSize = 30;
 
-    ctx.font = `${fontStyle} ${fontSize}px ${fonts[currentFontIndex]}`;
+    ctx.font = `${fontStyle} ${fontSize}px '${fonts[currentFontIndex]}'`;
 
     wrapAndDrawText(ctx, userText, 300);
 
@@ -156,29 +157,29 @@ function handleMouseDown(e) {
   const mousePos = getMousePos(canvas, e);
   if (isOverText(mousePos)) {
     isDraggingText = true;
-    startX = mousePos.x - textX;
-    startY = mousePos.y - textY;
+    textStartX = mousePos.x - textX;
+    textStartY = mousePos.y - textY;
   } else if (uploadedImage) {
     isDraggingImage = true;
-    startX = mousePos.x;
-    startY = mousePos.y;
+    imgStartX = mousePos.x;
+    imgStartY = mousePos.y;
   }
 }
 
 function handleMouseMove(e) {
   if (isDraggingText) {
     const mousePos = getMousePos(canvas, e);
-    textX = mousePos.x - startX;
-    textY = mousePos.y - startY;
+    textX = mousePos.x - textStartX;
+    textY = mousePos.y - textStartY;
     drawCanvas();
   } else if (isDraggingImage) {
     const mousePos = getMousePos(canvas, e);
-    const dx = mousePos.x - startX;
-    const dy = mousePos.y - startY;
+    const dx = mousePos.x - imgStartX;
+    const dy = mousePos.y - imgStartY;
     imgX += dx;
     imgY += dy;
-    startX = mousePos.x;
-    startY = mousePos.y;
+    imgStartX = mousePos.x;
+    imgStartY = mousePos.y;
     drawCanvas();
   }
 }
@@ -205,12 +206,12 @@ function handleTouchStart(e) {
     const touchPos = getTouchPos(canvas, e);
     if (isOverText(touchPos)) {
       isDraggingText = true;
-      startX = touchPos.x - textX;
-      startY = touchPos.y - textY;
+      textStartX = touchPos.x - textX;
+      textStartY = touchPos.y - textY;
     } else if (uploadedImage) {
       isDraggingImage = true;
-      startX = touchPos.x;
-      startY = touchPos.y;
+      imgStartX = touchPos.x;
+      imgStartY = touchPos.y;
     }
   } else if (e.touches.length === 2 && uploadedImage) {
     lastDist = getTouchDist(e);
@@ -221,17 +222,17 @@ function handleTouchMove(e) {
   e.preventDefault();
   if (e.touches.length === 1 && isDraggingText) {
     const touchPos = getTouchPos(canvas, e);
-    textX = touchPos.x - startX;
-    textY = touchPos.y - startY;
+    textX = touchPos.x - textStartX;
+    textY = touchPos.y - textStartY;
     drawCanvas();
   } else if (e.touches.length === 1 && isDraggingImage) {
     const touchPos = getTouchPos(canvas, e);
-    const dx = touchPos.x - startX;
-    const dy = touchPos.y - startY;
+    const dx = touchPos.x - imgStartX;
+    const dy = touchPos.y - imgStartY;
     imgX += dx;
     imgY += dy;
-    startX = touchPos.x;
-    startY = touchPos.y;
+    imgStartX = touchPos.x;
+    imgStartY = touchPos.y;
     drawCanvas();
   } else if (e.touches.length === 2 && uploadedImage) {
     const dist = getTouchDist(e);
@@ -243,7 +244,7 @@ function handleTouchMove(e) {
   }
 }
 
-function handleTouchEnd(e) {
+function handleTouchEnd() {
   isDraggingText = false;
   isDraggingImage = false;
 }
@@ -275,7 +276,7 @@ function isOverText(pos) {
   ctx.translate(textX, textY);
   ctx.rotate(textRotation);
 
-  ctx.font = `${styles[currentStyleIndex]} 30px ${fonts[currentFontIndex]}`;
+  ctx.font = `${styles[currentStyleIndex]} 30px '${fonts[currentFontIndex]}'`;
   const metrics = ctx.measureText(userText);
   const textWidth = metrics.width;
   const textHeight = 30; // Approximate height
@@ -358,7 +359,7 @@ function downloadImage() {
     let fontStyle = styles[currentStyleIndex];
     let fontSize = 80;
 
-    tempCtx.font = `${fontStyle} ${fontSize}px ${fonts[currentFontIndex]}`;
+    tempCtx.font = `${fontStyle} ${fontSize}px '${fonts[currentFontIndex]}'`;
 
     wrapAndDrawText(tempCtx, userText, 1000);
 
@@ -379,3 +380,4 @@ function downloadImage() {
   link.click();
   document.body.removeChild(link);
 }
+
