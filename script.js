@@ -1,6 +1,62 @@
 let uploadedImage = null;
+let enhancedImageSrc = null;
 
 document.getElementById('imageUpload').addEventListener('change', loadImage);
+
+function loadImage(event) {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    const imageData = e.target.result;
+    const image = new Image();
+    image.onload = function() {
+      drawImageToFitCanvas(image);
+      uploadedImage = image; // Store the uploaded image
+    };
+    image.src = imageData;
+  };
+
+  reader.readAsDataURL(file);
+}
+
+function drawImageToFitCanvas(image) {
+  const canvas = document.getElementById('statusCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = 500;
+  canvas.height = 500;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const aspectRatio = image.width / image.height;
+  let drawWidth, drawHeight;
+
+  if (aspectRatio > 1) {
+    drawWidth = canvas.width;
+    drawHeight = drawWidth / aspectRatio;
+  } else {
+    drawHeight = canvas.height;
+    drawWidth = drawHeight * aspectRatio;
+  }
+
+  const offsetX = (canvas.width - drawWidth) / 2;
+  const offsetY = (canvas.height - drawHeight) / 2;
+
+  ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+}
+
+async function enhanceAndDrawImage() {
+  if (!uploadedImage) return;
+
+  const imageData = uploadedImage.src;
+  const enhancedImage = await enhanceImage(imageData);
+
+  const image = new Image();
+  image.onload = function() {
+    drawImageToFitCanvas(image);
+    enhancedImageSrc = image.src;
+  };
+  image.src = enhancedImage;
+}
 
 async function enhanceImage(imageData) {
   const response = await fetch('https://api.example.com/v1/enhance', { // Replace with actual API URL
@@ -19,41 +75,21 @@ async function enhanceImage(imageData) {
   return result.enhancedImage; // Adjust based on the API's response structure
 }
 
-function loadImage(event) {
-  const file = event.target.files[0];
-  const reader = new FileReader();
-
-  reader.onload = async function(e) {
-    const imageData = e.target.result;
-    const enhancedImage = await enhanceImage(imageData);
-
-    const canvas = document.getElementById('statusCanvas');
-    const ctx = canvas.getContext('2d');
-    const image = new Image();
-    image.src = enhancedImage; // Use the enhanced image
-
-    image.onload = function() {
-      canvas.width = image.width;
-      canvas.height = image.height;
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-      uploadedImage = image; // Store the enhanced image
-    };
-  };
-
-  reader.readAsDataURL(file);
-}
-
 function generateQuoteImage() {
   const canvas = document.getElementById('statusCanvas');
   const ctx = canvas.getContext('2d');
   const text = document.getElementById('quoteText').value;
 
-  // Clear the canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   // Redraw the uploaded (enhanced) image
   if (uploadedImage) {
-    ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
+    drawImageToFitCanvas(uploadedImage);
+  }
+  if (enhancedImageSrc) {
+    const enhancedImage = new Image();
+    enhancedImage.src = enhancedImageSrc;
+    enhancedImage.onload = function() {
+      drawImageToFitCanvas(enhancedImage);
+    };
   }
 
   // Set text properties
@@ -86,4 +122,12 @@ function wrapText(ctx, text, maxWidth) {
   }
   lines.push(currentLine);
   return lines;
+}
+
+function downloadImage() {
+  const canvas = document.getElementById('statusCanvas');
+  const link = document.createElement('a');
+  link.download = 'quote-image.png';
+  link.href = canvas.toDataURL('image/png', 1.0); // High-quality PNG
+  link.click();
 }
