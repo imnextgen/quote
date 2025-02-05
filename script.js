@@ -3,6 +3,23 @@ let enhancedImageSrc = null;
 
 document.getElementById('imageUpload').addEventListener('change', loadImage);
 
+async function enhanceImage(imageData) {
+  const response = await fetch('https://api.example.com/v1/enhance', { // Replace with actual API URL
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer YOUR_API_KEY' // Replace with your API key
+    },
+    body: JSON.stringify({
+      image: imageData,
+      tasks: [{ name: 'upscale' }] // Adjust based on the API's requirements
+    })
+  });
+
+  const result = await response.json();
+  return result.enhancedImage; // Adjust based on the API's response structure
+}
+
 function loadImage(event) {
   const file = event.target.files[0];
   const reader = new FileReader();
@@ -58,40 +75,29 @@ async function enhanceAndDrawImage() {
   image.src = enhancedImage;
 }
 
-async function enhanceImage(imageData) {
-  const response = await fetch('https://api.example.com/v1/enhance', { // Replace with actual API URL
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer YOUR_API_KEY' // Replace with your API key
-    },
-    body: JSON.stringify({
-      image: imageData,
-      tasks: [{ name: 'upscale' }] // Adjust based on the API's requirements
-    })
-  });
-
-  const result = await response.json();
-  return result.enhancedImage; // Adjust based on the API's response structure
-}
-
 function generateQuoteImage() {
   const canvas = document.getElementById('statusCanvas');
   const ctx = canvas.getContext('2d');
   const text = document.getElementById('quoteText').value;
 
+  // Clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   // Redraw the uploaded (enhanced) image
-  if (uploadedImage) {
-    drawImageToFitCanvas(uploadedImage);
-  }
   if (enhancedImageSrc) {
     const enhancedImage = new Image();
     enhancedImage.src = enhancedImageSrc;
     enhancedImage.onload = function() {
       drawImageToFitCanvas(enhancedImage);
+      addTextToCanvas(ctx, text);
     };
+  } else if (uploadedImage) {
+    drawImageToFitCanvas(uploadedImage);
+    addTextToCanvas(ctx, text);
   }
+}
 
+function addTextToCanvas(ctx, text) {
   // Set text properties
   ctx.fillStyle = '#FFFFFF'; // Text color
   ctx.font = '30px Arial'; // Font size and style
@@ -99,9 +105,9 @@ function generateQuoteImage() {
   ctx.textBaseline = 'middle'; // Vertically center the text
 
   // Draw text
-  const lines = wrapText(ctx, text, canvas.width - 40);
+  const lines = wrapText(ctx, text, ctx.canvas.width - 40);
   lines.forEach((line, index) => {
-    ctx.fillText(line, canvas.width / 2, canvas.height / 2 + (index * 40));
+    ctx.fillText(line, ctx.canvas.width / 2, ctx.canvas.height / 2 + (index * 40));
   });
 }
 
