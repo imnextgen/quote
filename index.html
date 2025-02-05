@@ -2,18 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quote Image Generator</title>
+  <title>WhatsApp Status Image Generator</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h1>WhatsApp Status Image Generator</h1>
   <input type="file" id="imageUpload" accept="image/*">
   <br>
-  <canvas id="statusCanvas" width="500" height="500"></canvas>
+  <div id="canvasContainer">
+    <canvas id="statusCanvas" width="360" height="640"></canvas>
+  </div>
   <br>
   <input type="text" id="quoteText" placeholder="Enter your quote">
-  <button onclick="generateQuoteImage()">Generate Image</button>
-  <button onclick="enhanceAndDrawImage()">Enhance Image</button>
+  <br>
+  <button onclick="generateQuoteImage()">Add Text</button>
   <button onclick="downloadImage()">Download Image</button>
   <script src="script.js"></script>
 </body>
