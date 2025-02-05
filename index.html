@@ -7,16 +7,33 @@
 </head>
 <body>
   <h1>WhatsApp Status Image Generator</h1>
+
+  <!-- Image Upload -->
   <input type="file" id="imageUpload" accept="image/*">
-  <br>
+  <br><br>
+
+  <!-- Canvas Container -->
   <div id="canvasContainer">
     <canvas id="statusCanvas" width="360" height="640"></canvas>
   </div>
   <br>
+
+  <!-- Quote Input -->
   <input type="text" id="quoteText" placeholder="Enter your quote">
-  <br>
-  <button onclick="generateQuoteImage()">Add Text</button>
+  <button id="nextFontBtn">Next Font</button>
+  <button id="nextStyleBtn">Next Style</button>
+  <br><br>
+
+  <!-- Rotation Slider -->
+  <label for="rotationSlider">Rotate Text:</label>
+  <input type="range" id="rotationSlider" min="-180" max="180" value="0">
+  <br><br>
+
+  <!-- Buttons -->
   <button onclick="downloadImage()">Download Image</button>
+
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
