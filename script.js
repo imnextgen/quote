@@ -26,8 +26,11 @@ function generateQuoteImage() {
   const ctx = canvas.getContext('2d');
   const text = document.getElementById('quoteText').value;
 
+  // Clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Redraw the uploaded image
   if (uploadedImage) {
-    // Redraw the uploaded image
     ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
   }
 
