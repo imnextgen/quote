@@ -33,3 +33,7 @@ button {
 label {
   font-size: 16px;
 }
+
+input[type="range"] {
+  width: 200px;
+}
