@@ -16,6 +16,8 @@ let textY = canvas.height / 2;
 let isDraggingText = false;
 let textStartX, textStartY;
 let textRotation = 0;
+let textSize = 30; // Default text size
+let textColor = '#FFFFFF'; // Default text color
 
 let currentFontIndex = 0;
 const fonts = ['Arial', 'Roboto', 'Lobster', 'Montserrat', 'Oswald', 'Pacifico', 'Dancing Script'];
@@ -42,6 +44,8 @@ document.getElementById('nextFontBtn').addEventListener('click', nextFont);
 document.getElementById('nextStyleBtn').addEventListener('click', nextStyle);
 
 document.getElementById('rotationSlider').addEventListener('input', rotateText);
+document.getElementById('textSizeSlider').addEventListener('input', updateTextSize);
+document.getElementById('textColorPicker').addEventListener('input', updateTextColor);
 document.getElementById('downloadBtn').addEventListener('click', downloadImage);
 
 function loadImage(event) {
@@ -103,17 +107,15 @@ function drawCanvas() {
     ctx.translate(textX, textY);
     ctx.rotate(textRotation);
 
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = textColor; // Use the updated text color
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     let fontStyle = styles[currentStyleIndex];
-    let fontSize = 30;
-
     let currentFont = fonts[currentFontIndex];
-    ctx.font = `${fontStyle} ${fontSize}px '${currentFont}'`;
+    ctx.font = `${fontStyle} ${textSize}px '${currentFont}'`;
 
     wrapAndDrawText(ctx, userText, 300);
 
@@ -149,7 +151,6 @@ function wrapAndDrawText(ctx, text, maxWidth) {
 }
 
 function addText() {
-  // Get the text from the input field
   const textInput = document.getElementById('quoteText').value.trim();
   if (textInput === '') {
     alert('Please enter a quote.');
@@ -158,6 +159,16 @@ function addText() {
   userText = textInput;
   textX = canvas.width / 2;
   textY = canvas.height / 2;
+  drawCanvas();
+}
+
+function updateTextSize() {
+  textSize = document.getElementById('textSizeSlider').value;
+  drawCanvas();
+}
+
+function updateTextColor() {
+  textColor = document.getElementById('textColorPicker').value;
   drawCanvas();
 }
 
@@ -184,10 +195,13 @@ function handleMouseMove(e) {
     const mousePos = getMousePos(canvas, e);
     const dx = mousePos.x - imgStartX;
     const dy = mousePos.y - imgStartY;
+
     imgX += dx;
     imgY += dy;
+
     imgStartX = mousePos.x;
     imgStartY = mousePos.y;
+
     drawCanvas();
   }
 }
@@ -198,56 +212,48 @@ function handleMouseUp() {
 }
 
 function handleScroll(e) {
-  e.preventDefault();
-  if (uploadedImage) {
-    const delta = e.deltaY > 0 ? -0.05 : 0.05;
-    imgScale += delta;
-    if (imgScale < 0.1) imgScale = 0.1;
-    drawCanvas();
+  const scaleAmount = 0.1;
+  if (e.deltaY < 0) {
+    imgScale += scaleAmount;
+  } else if (e.deltaY > 0) {
+    imgScale = Math.max(0.1, imgScale - scaleAmount);
   }
+  drawCanvas();
 }
 
-// Touch Events
 function handleTouchStart(e) {
   e.preventDefault();
-  if (e.touches.length === 1) {
-    const touchPos = getTouchPos(canvas, e);
-    if (isOverText(touchPos)) {
-      isDraggingText = true;
-      textStartX = touchPos.x - textX;
-      textStartY = touchPos.y - textY;
-    } else if (uploadedImage) {
-      isDraggingImage = true;
-      imgStartX = touchPos.x;
-      imgStartY = touchPos.y;
-    }
-  } else if (e.touches.length === 2 && uploadedImage) {
-    lastDist = getTouchDist(e);
+  const touch = e.touches[0];
+  const touchPos = getTouchPos(canvas, touch);
+  if (isOverText(touchPos)) {
+    isDraggingText = true;
+    textStartX = touchPos.x - textX;
+    textStartY = touchPos.y - textY;
+  } else if (uploadedImage) {
+    isDraggingImage = true;
+    imgStartX = touchPos.x;
+    imgStartY = touchPos.y;
   }
 }
 
 function handleTouchMove(e) {
   e.preventDefault();
-  if (e.touches.length === 1 && isDraggingText) {
-    const touchPos = getTouchPos(canvas, e);
-    textX = touchPos.x - textStartX;
-    textY = touchPos.y - textStartY;
-    drawCanvas();
-  } else if (e.touches.length === 1 && isDraggingImage) {
-    const touchPos = getTouchPos(canvas, e);
-    const dx = touchPos.x - imgStartX;
-    const dy = touchPos.y - imgStartY;
-    imgX += dx;
-    imgY += dy;
-    imgStartX = touchPos.x;
-    imgStartY = touchPos.y;
-    drawCanvas();
-  } else if (e.touches.length === 2 && uploadedImage) {
-    const dist = getTouchDist(e);
-    const delta = dist - lastDist;
-    imgScale += delta * 0.005;
-    if (imgScale < 0.1) imgScale = 0.1;
-    lastDist = dist;
+  if (isDraggingText || isDraggingImage) {
+    const touch = e.touches[0];
+    const touchPos = getTouchPos(canvas, touch);
+    if (isDraggingText) {
+      textX = touchPos.x - textStartX;
+      textY = touchPos.y - textStartY;
+    } else if (isDraggingImage) {
+      const dx = touchPos.x - imgStartX;
+      const dy = touchPos.y - imgStartY;
+
+      imgX += dx;
+      imgY += dy;
+
+      imgStartX = touchPos.x;
+      imgStartY = touchPos.y;
+    }
     drawCanvas();
   }
 }
@@ -257,59 +263,25 @@ function handleTouchEnd() {
   isDraggingImage = false;
 }
 
-function getMousePos(canvas, evt) {
+function getMousePos(canvas, event) {
   const rect = canvas.getBoundingClientRect();
   return {
-    x: (evt.clientX - rect.left) * (canvas.width / rect.width),
-    y: (evt.clientY - rect.top) * (canvas.height / rect.height)
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top,
   };
 }
 
-function getTouchPos(canvas, evt) {
+function getTouchPos(canvas, touch) {
   const rect = canvas.getBoundingClientRect();
   return {
-    x: (evt.touches[0].clientX - rect.left) * (canvas.width / rect.width),
-    y: (evt.touches[0].clientY - rect.top) * (canvas.height / rect.height)
+    x: touch.clientX - rect.left,
+    y: touch.clientY - rect.top,
   };
 }
 
-function getTouchDist(e) {
-  const dx = e.touches[0].clientX - e.touches[1].clientX;
-  const dy = e.touches[0].clientY - e.touches[1].clientY;
-  return Math.sqrt(dx * dx + dy * dy);
-}
-
-function isOverText(pos) {
-  if (!userText) return false;
-
-  ctx.save();
-  ctx.translate(textX, textY);
-  ctx.rotate(textRotation);
-
-  let fontStyle = styles[currentStyleIndex];
-  let fontSize = 30;
-  let currentFont = fonts[currentFontIndex];
-  ctx.font = `${fontStyle} ${fontSize}px '${currentFont}'`;
-
-  const metrics = ctx.measureText(userText);
-  const textWidth = metrics.width;
-  const textHeight = fontSize; // Approximate height
-
-  ctx.restore();
-
-  // Create a rectangle around the text
-  const rectX = textX - textWidth / 2;
-  const rectY = textY - textHeight / 2;
-  const rectWidth = textWidth;
-  const rectHeight = textHeight;
-
-  // Check if position is within the rectangle
-  return (
-    pos.x >= rectX &&
-    pos.x <= rectX + rectWidth &&
-    pos.y >= rectY &&
-    pos.y <= rectY + rectHeight
-  );
+function isOverText(mousePos) {
+  const textWidth = ctx.measureText(userText).width;
+  return mousePos.x > textX - textWidth / 2 && mousePos.x < textX + textWidth / 2 && mousePos.y > textY - textSize / 2 && mousePos.y < textY + textSize / 2;
 }
 
 function nextFont() {
@@ -323,83 +295,14 @@ function nextStyle() {
 }
 
 function rotateText() {
-  const angle = document.getElementById('rotationSlider').value;
-  textRotation = angle * (Math.PI / 180); // Convert degrees to radians
+  textRotation = document.getElementById('rotationSlider').value * (Math.PI / 180);
   drawCanvas();
 }
 
 function downloadImage() {
-  drawCanvas();
-
-  // Create a temporary canvas for the full-size image
-  const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = 1080; // Ideal width for WhatsApp status
-  tempCanvas.height = 1920; // Ideal height for WhatsApp status
-  const tempCtx = tempCanvas.getContext('2d');
-
-  // Scale factors to adjust positions and sizes accordingly
-  const scaleX = tempCanvas.width / canvas.width;
-  const scaleY = tempCanvas.height / canvas.height;
-
-  // Draw the image onto the temporary canvas
-  if (uploadedImage) {
-    const imgWidth = uploadedImage.width * imgScale * scaleX;
-    const imgHeight = uploadedImage.height * imgScale * scaleY;
-
-    const centerX = tempCanvas.width / 2;
-    const centerY = tempCanvas.height / 2;
-
-    tempCtx.drawImage(
-      uploadedImage,
-      centerX - imgWidth / 2 + imgX * scaleX,
-      centerY - imgHeight / 2 + imgY * scaleY,
-      imgWidth,
-      imgHeight
-    );
-  } else {
-    // Fill the background if no image is uploaded
-    tempCtx.fillStyle = '#000000';
-    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-  }
-
-  // Draw the text onto the temporary canvas
-  if (userText) {
-    tempCtx.save();
-
-    tempCtx.translate(textX * scaleX, textY * scaleY);
-    tempCtx.rotate(textRotation);
-
-    tempCtx.fillStyle = '#FFFFFF';
-    tempCtx.strokeStyle = '#000000';
-    tempCtx.lineWidth = 4;
-    tempCtx.textAlign = 'center';
-    tempCtx.textBaseline = 'middle';
-
-    const fontStyle = styles[currentStyleIndex];
-    const fontSize = 80;
-    const currentFont = fonts[currentFontIndex];
-
-    tempCtx.font = `${fontStyle} ${fontSize}px '${currentFont}'`;
-
-    wrapAndDrawText(tempCtx, userText, 1000);
-
-    tempCtx.restore();
-  }
-
-  // Convert the canvas to a data URL
-  const dataURL = tempCanvas.toDataURL('image/png');
-
-  // Create a temporary link element to initiate the download
+  const dataURL = canvas.toDataURL('image/png');
   const link = document.createElement('a');
   link.href = dataURL;
-  link.download = uploadedFileName.replace(/\.[^/.]+$/, '') + '.png';
-
-  // Append the link to the body
-  document.body.appendChild(link);
-
-  // Programmatically click the link to trigger the download
+  link.download = uploadedFileName;
   link.click();
-
-  // Remove the link from the document
-  document.body.removeChild(link);
 }
