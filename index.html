@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>WhatsApp Status Image Generator</title>
+  <title>PictoPhrase - WhatsApp Status Image Generator</title>
+  <!-- Meta Tag for Responsive Design -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Load Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700|Montserrat:300,400,500,600|Roboto|Lobster|Oswald|Pacifico|Dancing+Script&display=swap" rel="stylesheet">
   <!-- Include Font Awesome for Icons -->
@@ -13,23 +15,19 @@
 <body>
   <!-- Navigation Bar -->
   <nav>
-    <div class="logo">StatusImageGen</div>
+    <div class="logo">PictoPhrase</div>
   </nav>
 
   <div class="container">
     <h1>PictoPhrase</h1>
 
-    <!-- Canvas Container with iOS Frame -->
+    <!-- Canvas Container -->
     <div id="canvasContainer">
-      <div class="iphone-frame">
-        <!-- iPhone Notch -->
-        <div class="notch"></div>
-        <canvas id="statusCanvas" width="360" height="640"></canvas>
-        <!-- Hidden File Input -->
-        <input type="file" id="imageUpload" accept="image/*" hidden>
-        <!-- Overlay Upload Button -->
-        <button id="uploadBtn"><i class="fas fa-cloud-upload-alt"></i> Upload Background Image</button>
-      </div>
+      <canvas id="statusCanvas"></canvas>
+      <!-- Hidden File Input -->
+      <input type="file" id="imageUpload" accept="image/*" hidden>
+      <!-- Overlay Upload Button -->
+      <button id="uploadBtn"><i class="fas fa-cloud-upload-alt"></i> Upload Background Image</button>
     </div>
 
     <!-- Quote Input -->
