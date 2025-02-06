@@ -1,16 +1,52 @@
+/* General Styles */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
   text-align: center;
-  background-color: #f0f0f0;
-  padding-top: 20px;
 }
 
+.container {
+  max-width: 800px;
+  margin: 20px auto;
+  text-align: center;
+}
+
+h1 {
+  color: #333333;
+}
+
+.upload-section {
+  margin-bottom: 20px;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 8px 15px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #ffffff;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.custom-file-upload i {
+  margin-right: 5px;
+}
+
+#imageUpload {
+  display: none;
+}
+
+/* Canvas Styles */
 #canvasContainer {
   position: relative;
   width: 360px;
   height: 640px;
   margin: 0 auto;
-  border: 1px solid #000;
+  border: 1px solid #cccccc;
+  background-color: #ffffff;
   overflow: hidden;
   touch-action: none; /* Disable default touch actions */
 }
@@ -21,19 +57,126 @@ body {
   left: 0;
 }
 
-input[type="text"], input[type="range"], button {
-  margin-top: 10px;
+/* Quote Input */
+#quoteText {
+  width: 80%;
+  height: 80px;
+  margin: 20px auto;
+  padding: 10px;
   font-size: 16px;
+  resize: vertical;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
 }
 
-button {
-  padding: 5px 10px;
+/* Text Controls */
+.text-controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-label {
+.text-controls button {
+  padding: 10px 15px;
   font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #28a745;
+  color: #ffffff;
 }
 
-input[type="range"] {
-  width: 200px;
+.text-controls button i {
+  margin-right: 5px;
+}
+
+.text-controls button:hover {
+  background-color: #218838;
+}
+
+.text-controls button.active {
+  background-color: #ff9800;
+}
+
+/* Slider and Color Picker Controls */
+.slider-controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.slider-group,
+.color-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider-group label,
+.color-picker-group label {
+  font-size: 16px;
+  color: #333333;
+}
+
+#textSizeSlider,
+#rotationSlider {
+  width: 150px;
+}
+
+#textColorPicker {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+}
+
+/* Download Button */
+#downloadBtn {
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #17a2b8;
+  color: #ffffff;
+  margin-bottom: 30px;
+}
+
+#downloadBtn i {
+  margin-right: 5px;
+}
+
+#downloadBtn:hover {
+  background-color: #138496;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  #canvasContainer {
+    width: 100%;
+    height: auto;
+  }
+
+  #statusCanvas {
+    width: 100%;
+    height: auto;
+  }
+
+  .slider-controls {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .slider-group,
+  .color-picker-group {
+    justify-content: center;
+  }
+
+  #quoteText {
+    width: 90%;
+  }
 }
