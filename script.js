@@ -164,12 +164,12 @@ function addText() {
 
 function updateTextSize() {
   textSize = document.getElementById('textSizeSlider').value;
-  drawCanvas();
+  drawCanvas(); // Re-draw the canvas after updating text size
 }
 
 function updateTextColor() {
   textColor = document.getElementById('textColorPicker').value;
-  drawCanvas();
+  drawCanvas(); // Re-draw the canvas after updating text color
 }
 
 function handleMouseDown(e) {
