@@ -9,7 +9,6 @@ let imgX = 0,
 let imgScale = 1;
 let isDraggingImage = false;
 let imgStartX, imgStartY;
-let lastDist = 0;
 
 let userText = '';
 let textX = canvas.width / 2;
@@ -133,10 +132,48 @@ function drawCanvas() {
     let currentFont = fonts[currentFontIndex];
     ctx.font = `${fontStyle} ${textSize}px '${currentFont}'`; // Use textSize here
 
-    wrapAndDrawText(ctx, userText, 300);
+    wrapAndDrawText(ctx, userText, canvas.width * 0.8); // Adjust maxWidth as needed
 
     ctx.restore();
   }
+}
+
+function wrapAndDrawText(context, text, maxWidth) {
+  const lines = [];
+  const lineHeight = textSize * 1.2;
+  const paragraphs = text.split('\n');
+
+  // Split text into words and handle wrapping
+  paragraphs.forEach((paragraph) => {
+    let words = paragraph.split(' ');
+    let line = '';
+
+    words.forEach((word, index) => {
+      let testLine = line + word + ' ';
+      let metrics = context.measureText(testLine);
+      let testWidth = metrics.width;
+
+      if (testWidth > maxWidth && index > 0) {
+        lines.push(line);
+        line = word + ' ';
+      } else {
+        line = testLine;
+      }
+    });
+
+    lines.push(line);
+  });
+
+  // Adjust starting Y position to center text vertically
+  let y =
+    (-lines.length / 2) * lineHeight + lineHeight / 2;
+
+  // Draw each line of text
+  lines.forEach((line) => {
+    context.fillText(line.trim(), 0, y);
+    context.strokeText(line.trim(), 0, y);
+    y += lineHeight;
+  });
 }
 
 function addText() {
@@ -278,10 +315,12 @@ function isOverText(mousePos) {
   let currentFont = fonts[currentFontIndex];
   ctx.font = `${fontStyle} ${textSize}px '${currentFont}'`;
 
-  // Measure text dimensions
-  const textMetrics = ctx.measureText(userText);
-  const textWidth = textMetrics.width;
-  const textHeight = textSize; // Approximate height
+  const lines = userText.split('\n');
+  const lineHeight = textSize * 1.2;
+  const textHeight = lines.length * lineHeight;
+  const maxLineWidth = Math.max(
+    ...lines.map((line) => ctx.measureText(line).width)
+  );
 
   // Calculate mouse position relative to the rotated text
   const dx = mousePos.x - textX;
@@ -294,8 +333,8 @@ function isOverText(mousePos) {
   ctx.restore(); // Restore the context to its original state
 
   return (
-    x > -textWidth / 2 &&
-    x < textWidth / 2 &&
+    x > -maxLineWidth / 2 &&
+    x < maxLineWidth / 2 &&
     y > -textHeight / 2 &&
     y < textHeight / 2
   );
