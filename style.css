@@ -26,6 +26,7 @@ nav .logo {
   max-width: 800px;
   margin: 40px auto;
   text-align: center;
+  padding: 0 15px; /* Added padding for mobile devices */
 }
 
 /* Heading */
@@ -40,45 +41,23 @@ h1 {
 #canvasContainer {
   position: relative;
   margin: 0 auto 20px;
-}
-
-/* iPhone Frame */
-.iphone-frame {
-  position: relative;
-  width: 375px;
-  height: 812px;
-  margin: 0 auto;
+  width: 100%; /* Make the container responsive */
+  max-width: 500px; /* Limit maximum width */
+  padding-top: 177.78%; /* Maintain 9:16 aspect ratio (16:9 inverted) */
   background-color: #000;
-  border-radius: 40px;
+  border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-/* iPhone Notch */
-.notch {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 210px;
-  height: 30px;
-  background-color: #000;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
-  z-index: 1;
-}
-
-/* Adjust canvas to fit within the frame */
+/* Responsive Canvas */
 #statusCanvas {
   position: absolute;
-  top: 44px;
-  left: 7px;
-  width: 360px;
-  height: 724px;
-}
-
-#canvasContainer.image-loaded .notch {
-  display: none;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none; /* Disable default touch actions */
 }
 
 /* Upload Button */
@@ -96,6 +75,7 @@ h1 {
   color: #fff;
   display: flex;
   align-items: center;
+  z-index: 1;
 }
 
 #uploadBtn i {
@@ -108,7 +88,8 @@ h1 {
 
 /* Quote Input */
 #quoteText {
-  width: 80%;
+  width: 100%;
+  max-width: 600px;
   height: 100px;
   margin: 20px auto;
   padding: 15px;
@@ -119,12 +100,17 @@ h1 {
   color: #333;
 }
 
+#quoteText:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
 /* Text and Styling Controls */
 .text-controls,
 .styling-controls {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Allow controls to wrap on smaller screens */
   gap: 10px;
   margin-bottom: 20px;
 }
@@ -164,7 +150,7 @@ h1 {
 .slider-controls {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Allow sliders to wrap on smaller screens */
   gap: 30px;
   margin-bottom: 30px;
 }
@@ -225,23 +211,42 @@ h1 {
 
 /* Responsive Design */
 @media (max-width: 600px) {
-  .iphone-frame {
-    width: 300px;
-    height: 650px;
+  /* Adjust heading size */
+  h1 {
+    font-size: 28px;
   }
 
-  #statusCanvas {
-    top: 38px;
-    left: 5px;
-    width: 290px;
-    height: 574px;
-  }
-
-  #quoteText {
-    width: 90%;
-  }
-
-  #downloadBtn {
+  /* Adjust container margin */
+  .container {
     margin: 20px auto;
+    padding: 0 10px;
+  }
+
+  /* Adjust quote input width */
+  #quoteText {
+    width: 100%;
+  }
+
+  /* Adjust controls for mobile */
+  .slider-controls {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .slider-group,
+  .color-picker-group {
+    width: 100%;
+    justify-content: center;
+  }
+
+  #textSizeSlider,
+  #rotationSlider {
+    width: 100%;
+  }
+
+  /* Adjust download button width */
+  #downloadBtn {
+    width: 100%;
+    max-width: 300px;
   }
 }
