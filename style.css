@@ -83,7 +83,8 @@ h1 {
   border-radius: 8px;
 }
 
-.text-controls, .styling-controls {
+.text-controls,
+.styling-controls {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -91,7 +92,8 @@ h1 {
   margin-bottom: 20px;
 }
 
-.text-controls button, .styling-controls button {
+.text-controls button,
+.styling-controls button {
   padding: 10px 15px;
   font-size: 16px;
   cursor: pointer;
@@ -103,15 +105,18 @@ h1 {
   align-items: center;
 }
 
-.text-controls button i, .styling-controls button i {
+.text-controls button i,
+.styling-controls button i {
   margin-right: 5px;
 }
 
-.text-controls button:hover, .styling-controls button:hover {
+.text-controls button:hover,
+.styling-controls button:hover {
   background-color: #0056b3;
 }
 
-.text-controls button.active, .styling-controls button.active {
+.text-controls button.active,
+.styling-controls button.active {
   background-color: #28a745;
 }
 
@@ -123,18 +128,21 @@ h1 {
   margin-bottom: 30px;
 }
 
-.slider-group, .color-picker-group {
+.slider-group,
+.color-picker-group {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.slider-group label, .color-picker-group label {
+.slider-group label,
+.color-picker-group label {
   font-size: 16px;
   color: #333;
 }
 
-#textSizeSlider, #rotationSlider {
+#textSizeSlider,
+#rotationSlider {
   width: 150px;
 }
 
@@ -153,9 +161,10 @@ h1 {
   border-radius: 50px;
   background-color: #28a745;
   color: #ffffff;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  margin-bottom: 50px;
+  justify-content: center;
+  margin: 20px auto; /* Center the button */
 }
 
 #downloadBtn i {
@@ -188,11 +197,16 @@ h1 {
     align-items: center;
   }
 
-  .slider-group, .color-picker-group {
+  .slider-group,
+  .color-picker-group {
     justify-content: center;
   }
 
   #quoteText {
     width: 90%;
+  }
+
+  #downloadBtn {
+    margin: 20px auto; /* Ensure the button remains centered on mobile */
   }
 }
