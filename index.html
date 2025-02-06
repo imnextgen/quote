@@ -5,7 +5,7 @@
   <title>WhatsApp Status Image Generator</title>
   <!-- Load Google Fonts -->
   <link
-    href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700|Montserrat:300,400,500,600|Roboto|Lobster|Oswald|Pacifico|Dancing+Script&display=swap"
+    href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700|Montserrat:300,400,500,600&display=swap"
     rel="stylesheet"
   >
   <!-- Include Font Awesome for Icons -->
@@ -22,18 +22,20 @@
     <div class="logo">StatusImageGen</div>
   </nav>
 
-  <!-- Header Section -->
-  <header>
-    <h1>Create Your Custom WhatsApp Status Image</h1>
-  </header>
-
+  <!-- Main Content -->
   <div class="container">
-    <!-- Canvas Container with iOS Frame -->
+    <!-- Title Section -->
+    <header>
+      <h1>Create Your Custom</h1>
+      <h2>WhatsApp Status Image</h2>
+    </header>
+
+    <!-- Canvas Container with iPhone Frame -->
     <div id="canvasContainer">
       <div class="iphone-frame">
-        <!-- iPhone Notch -->
-        <div class="notch"></div>
-        <canvas id="statusCanvas" width="360" height="640"></canvas>
+        <!-- Dynamic Island Notch -->
+        <div class="dynamic-island"></div>
+        <canvas id="statusCanvas" width="393" height="852"></canvas>
         <!-- Hidden File Input -->
         <input type="file" id="imageUpload" accept="image/*" hidden>
         <!-- Overlay Upload Button -->
