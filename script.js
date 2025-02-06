@@ -1,5 +1,5 @@
 let uploadedImage = null;
-let uploadedFileName = 'quote-image.png';
+let uploadedFileName = 'quote-image.jpeg';
 
 const canvas = document.getElementById('statusCanvas');
 const ctx = canvas.getContext('2d');
