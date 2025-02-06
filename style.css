@@ -1,23 +1,10 @@
 /* General Styles */
 body {
   font-family: 'Montserrat', sans-serif;
-  background: url('images/elegant-background.jpg') no-repeat center center fixed;
-  background-size: cover;
+  background: linear-gradient(to bottom, #ffffff, #e6e9f0);
   margin: 0;
   padding: 0;
   color: #333;
-}
-
-/* Optional Overlay to Soften the Background */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.7);
-  pointer-events: none;
 }
 
 /* Navigation Bar */
@@ -33,35 +20,21 @@ nav .logo {
   color: #333;
 }
 
-/* Header Styles */
-header {
+/* Container */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
   text-align: center;
-  margin-top: 30px;
-  margin-bottom: 30px;
 }
 
-header h1 {
+/* Heading */
+h1 {
   font-family: 'Playfair Display', serif;
-  font-size: 48px;
-  font-weight: 700;
+  font-size: 40px;
+  margin: 40px 0 30px;
   color: #333;
-  margin: 0;
-}
-
-header h2 {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 28px;
-  color: #666;
-  margin-top: 10px;
-}
-
-@media (max-width: 600px) {
-  header h1 {
-    font-size: 36px;
-  }
-  header h2 {
-    font-size: 24px;
-  }
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 /* Canvas Container */
@@ -74,37 +47,38 @@ header h2 {
 .iphone-frame {
   position: relative;
   width: 360px;
-  height: 780px;
+  height: 720px;
   margin: 0 auto;
   background-color: #000;
-  border-radius: 50px;
+  border-radius: 40px;
   overflow: hidden;
   box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-/* Dynamic Island */
-.dynamic-island {
+/* iPhone Notch */
+.notch {
   position: absolute;
-  top: 10px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 120px;
-  height: 35px;
+  width: 210px;
+  height: 30px;
   background-color: #000;
-  border-radius: 20px;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
   z-index: 1;
 }
 
 /* Adjust canvas to fit within the frame */
 #statusCanvas {
   position: absolute;
-  top: 55px;
+  top: 44px;
   left: 5px;
   width: 350px;
-  height: 720px;
+  height: 676px;
 }
 
-#canvasContainer.image-loaded .dynamic-island {
+#canvasContainer.image-loaded .notch {
   display: none;
 }
 
@@ -142,15 +116,14 @@ header h2 {
   padding: 15px;
   font-size: 16px;
   resize: vertical;
-  border: none;
-  border-bottom: 2px solid #ccc;
-  background: transparent;
+  border: 1px solid #ccc;
+  border-radius: 8px;
   color: #333;
 }
 
 #quoteText:focus {
   outline: none;
-  border-bottom: 2px solid #007bff;
+  border-color: #007bff;
 }
 
 /* Text Controls */
@@ -191,7 +164,7 @@ header h2 {
   font-size: 22px;
   cursor: pointer;
   border: none;
-  border-radius: 50%;
+  border-radius: 8px;
   background-color: #f8f9fa;
   color: #333;
   display: flex;
@@ -294,26 +267,22 @@ header h2 {
 @media (max-width: 600px) {
   .iphone-frame {
     width: 320px;
-    height: 693px;
+    height: 640px;
   }
 
   #statusCanvas {
-    top: 50px;
+    top: 38px;
     left: 5px;
     width: 310px;
-    height: 638px;
+    height: 594px;
   }
 
   #quoteText {
     width: 90%;
   }
 
-  header h1 {
+  h1 {
     font-size: 32px;
-  }
-
-  header h2 {
-    font-size: 24px;
   }
 
   #downloadBtn {
