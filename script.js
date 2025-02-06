@@ -139,35 +139,6 @@ function drawCanvas() {
   }
 }
 
-function wrapAndDrawText(ctx, text, maxWidth) {
-  const words = text.split(' ');
-  const lines = [];
-  let currentLine = words[0];
-
-  // Wrap text into lines based on max width
-  for (let i = 1; i < words.length; i++) {
-    const word = words[i];
-    const width = ctx.measureText(currentLine + ' ' + word).width;
-    if (width < maxWidth) {
-      currentLine += ' ' + word;
-    } else {
-      lines.push(currentLine);
-      currentLine = word;
-    }
-  }
-  lines.push(currentLine);
-
-  // Support line breaks entered in the user input
-  const lineHeight = textSize * 1.2; // Dynamic line height
-  let y = -((lines.length - 1) * lineHeight) / 2; // Center the text vertically
-
-  lines.forEach((line) => {
-    ctx.strokeText(line, 0, y);
-    ctx.fillText(line, 0, y);
-    y += lineHeight;
-  });
-}
-
 function addText() {
   const textInput = document.getElementById('quoteText').value.trim();
   if (textInput === '') {
