@@ -6,7 +6,7 @@
   <!-- Load Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700|Montserrat:300,400,500,600|Roboto|Lobster|Oswald|Pacifico|Dancing+Script&display=swap" rel="stylesheet">
   <!-- Include Font Awesome for Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pH8R2YniEKY7rSqK5mBGE3Pgvk0dKDkK9MU6YB6oH4bYbqhgh4DlDhxN1tpb0yoVo9UvT1Lfsnd7eH3KyqDZlw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <!-- Link to CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
@@ -19,13 +19,17 @@
   <div class="container">
     <h1>Create Your Custom WhatsApp Status Image</h1>
 
-    <!-- Canvas Container -->
+    <!-- Canvas Container with iOS Frame -->
     <div id="canvasContainer">
-      <canvas id="statusCanvas" width="360" height="640"></canvas>
-      <!-- Hidden File Input -->
-      <input type="file" id="imageUpload" accept="image/*" hidden>
-      <!-- Overlay Upload Button -->
-      <button id="uploadBtn"><i class="fas fa-cloud-upload-alt"></i> Upload Background Image</button>
+      <div class="iphone-frame">
+        <!-- iPhone Notch -->
+        <div class="notch"></div>
+        <canvas id="statusCanvas" width="360" height="640"></canvas>
+        <!-- Hidden File Input -->
+        <input type="file" id="imageUpload" accept="image/*" hidden>
+        <!-- Overlay Upload Button -->
+        <button id="uploadBtn"><i class="fas fa-cloud-upload-alt"></i> Upload Background Image</button>
+      </div>
     </div>
 
     <!-- Quote Input -->
@@ -38,10 +42,10 @@
 
     <!-- Styling Controls -->
     <div class="styling-controls">
-      <button id="boldBtn"><i class="fas fa-bold"></i></button>
-      <button id="italicBtn"><i class="fas fa-italic"></i></button>
-      <button id="underlineBtn"><i class="fas fa-underline"></i></button>
-      <button id="nextFontBtn"><i class="fas fa-font"></i> Next Font</button>
+      <button id="boldBtn" title="Bold"><i class="fas fa-bold"></i></button>
+      <button id="italicBtn" title="Italic"><i class="fas fa-italic"></i></button>
+      <button id="underlineBtn" title="Underline"><i class="fas fa-underline"></i></button>
+      <button id="nextFontBtn" title="Next Font"><i class="fas fa-font"></i></button>
     </div>
 
     <!-- Sliders and Color Picker -->
