@@ -1,5 +1,3 @@
-// script.js
-
 // Variables for image handling
 let uploadedImage = null;
 let uploadedFileName = 'quote-image.jpeg';
@@ -40,6 +38,11 @@ const fonts = [
   'Dancing Script',
 ];
 
+// Multi-touch variables for pinch-to-zoom
+let initialDistance = 0;
+let initialScale = 1;
+let lastTouchEnd = 0;
+
 // Event Listeners
 
 // Handle the click event on the custom upload button
@@ -56,10 +59,11 @@ canvas.addEventListener('mousemove', handleMouseMove);
 canvas.addEventListener('mouseup', handleMouseUp);
 canvas.addEventListener('mouseout', handleMouseUp);
 
-// Touch events for dragging on mobile devices
+// Touch events for dragging and pinch-to-zoom on mobile devices
 canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
 canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
 canvas.addEventListener('touchend', handleTouchEnd);
+canvas.addEventListener('touchcancel', handleTouchEnd);
 
 // Button controls
 document.getElementById('addTextBtn').addEventListener('click', addText);
@@ -318,28 +322,40 @@ function handleMouseUp() {
 
 function handleTouchStart(e) {
   e.preventDefault();
-  const touch = e.touches[0];
-  const touchPos = getTouchPos(canvas, touch);
-  if (isOverText(touchPos)) {
-    isDraggingText = true;
-    textStartX = touchPos.x - textX;
-    textStartY = touchPos.y - textY;
-  } else if (uploadedImage && isOverImage(touchPos)) {
-    isDraggingImage = true;
-    imgStartX = touchPos.x;
-    imgStartY = touchPos.y;
+  if (e.touches.length === 1) {
+    const touch = e.touches[0];
+    const touchPos = getTouchPos(canvas, touch);
+    if (isOverText(touchPos)) {
+      isDraggingText = true;
+      textStartX = touchPos.x - textX;
+      textStartY = touchPos.y - textY;
+    } else if (uploadedImage && isOverImage(touchPos)) {
+      isDraggingImage = true;
+      imgStartX = touchPos.x;
+      imgStartY = touchPos.y;
+    }
+  } else if (e.touches.length === 2) {
+    // Pinch-to-zoom start
+    isDraggingImage = false;
+    isDraggingText = false;
+    initialDistance = getDistanceBetweenTouches(e.touches[0], e.touches[1]);
+    initialScale = imgScale;
   }
 }
 
 function handleTouchMove(e) {
   e.preventDefault();
-  if (isDraggingText || isDraggingImage) {
-    const touch = e.touches[0];
-    const touchPos = getTouchPos(canvas, touch);
+
+  if (e.touches.length === 1) {
     if (isDraggingText) {
+      const touch = e.touches[0];
+      const touchPos = getTouchPos(canvas, touch);
       textX = touchPos.x - textStartX;
       textY = touchPos.y - textStartY;
+      drawCanvas(); // Redraw the canvas when dragging the text
     } else if (isDraggingImage) {
+      const touch = e.touches[0];
+      const touchPos = getTouchPos(canvas, touch);
       const dx = touchPos.x - imgStartX;
       const dy = touchPos.y - imgStartY;
 
@@ -348,14 +364,24 @@ function handleTouchMove(e) {
 
       imgStartX = touchPos.x;
       imgStartY = touchPos.y;
+
+      drawCanvas(); // Redraw the canvas when dragging
     }
-    drawCanvas(); // Redraw the canvas when dragging
+  } else if (e.touches.length === 2) {
+    // Pinch-to-zoom move
+    const currentDistance = getDistanceBetweenTouches(e.touches[0], e.touches[1]);
+    const scaleChange = currentDistance / initialDistance;
+    imgScale = initialScale * scaleChange;
+    drawCanvas();
   }
 }
 
-function handleTouchEnd() {
-  isDraggingText = false;
-  isDraggingImage = false;
+function handleTouchEnd(e) {
+  if (e.touches.length < 2) {
+    // Reset variables when touches end
+    isDraggingText = false;
+    isDraggingImage = false;
+  }
 }
 
 // Helper Functions
@@ -424,6 +450,14 @@ function isOverImage(pos) {
   const y = pos.y - (centerY - imgHeight / 2 + imgY);
 
   return x >= 0 && x <= imgWidth && y >= 0 && y <= imgHeight;
+}
+
+function getDistanceBetweenTouches(touch1, touch2) {
+  const pos1 = getTouchPos(canvas, touch1);
+  const pos2 = getTouchPos(canvas, touch2);
+  const dx = pos2.x - pos1.x;
+  const dy = pos2.y - pos1.y;
+  return Math.hypot(dx, dy);
 }
 
 // Zoom functionality with mouse wheel
