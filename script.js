@@ -1,15 +1,21 @@
+// script.js
+
+// Variables for image handling
 let uploadedImage = null;
 let uploadedFileName = 'quote-image.jpeg';
 
+// Canvas and context
 const canvas = document.getElementById('statusCanvas');
 const ctx = canvas.getContext('2d');
 
+// Image positioning and scaling
 let imgX = 0,
     imgY = 0;
 let imgScale = 1;
 let isDraggingImage = false;
 let imgStartX, imgStartY;
 
+// Text properties
 let userText = '';
 let textX = canvas.width / 2;
 let textY = canvas.height / 2;
@@ -18,7 +24,11 @@ let textStartX, textStartY;
 let textRotation = 0;
 let textSize = 30; // Default text size
 let textColor = '#FFFFFF'; // Default text color
+let isBold = false;
+let isItalic = false;
+let isUnderline = false;
 
+// Fonts and styles
 let currentFontIndex = 0;
 const fonts = [
   'Arial',
@@ -30,31 +40,37 @@ const fonts = [
   'Dancing Script',
 ];
 
-let isBold = false;
-let isItalic = false;
-let isUnderline = false;
-
 // Event Listeners
+
+// Handle the click event on the custom upload button
+document.getElementById('uploadBtn').addEventListener('click', () => {
+  document.getElementById('imageUpload').click();
+});
+
+// Image upload handling
 document.getElementById('imageUpload').addEventListener('change', loadImage);
 
+// Mouse events for dragging
 canvas.addEventListener('mousedown', handleMouseDown);
 canvas.addEventListener('mousemove', handleMouseMove);
 canvas.addEventListener('mouseup', handleMouseUp);
 canvas.addEventListener('mouseout', handleMouseUp);
 
-canvas.addEventListener('wheel', handleScroll);
-
+// Touch events for dragging on mobile devices
 canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
 canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
 canvas.addEventListener('touchend', handleTouchEnd);
 
+// Button controls
 document.getElementById('addTextBtn').addEventListener('click', addText);
 document.getElementById('nextFontBtn').addEventListener('click', nextFont);
-
 document.getElementById('boldBtn').addEventListener('click', toggleBold);
 document.getElementById('italicBtn').addEventListener('click', toggleItalic);
-document.getElementById('underlineBtn').addEventListener('click', toggleUnderline);
+document
+  .getElementById('underlineBtn')
+  .addEventListener('click', toggleUnderline);
 
+// Sliders and color picker
 document
   .getElementById('rotationSlider')
   .addEventListener('input', rotateText);
@@ -64,7 +80,11 @@ document
 document
   .getElementById('textColorPicker')
   .addEventListener('input', updateTextColor);
+
+// Download button
 document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+
+// Functions
 
 function loadImage(event) {
   const file = event.target.files[0];
@@ -80,7 +100,9 @@ function loadImage(event) {
     image.onload = function () {
       uploadedImage = image;
       resetImagePosition();
-      drawCanvas(); // Redraw the canvas after image is loaded
+      drawCanvas(); // Redraw the canvas after the image is loaded
+      // Hide the upload button by adding a class to the canvas container
+      document.getElementById('canvasContainer').classList.add('image-loaded');
     };
     image.src = imageData;
   };
@@ -114,7 +136,7 @@ function drawCanvas() {
     );
   } else {
     // Fill the background if no image is uploaded
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = '#CCCCCC';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
@@ -214,13 +236,54 @@ function updateTextColor() {
   drawCanvas(); // Re-draw the canvas after updating text color
 }
 
+function rotateText() {
+  textRotation =
+    (document.getElementById('rotationSlider').value * Math.PI) / 180;
+  drawCanvas(); // Redraw the canvas after rotation change
+}
+
+function nextFont() {
+  currentFontIndex = (currentFontIndex + 1) % fonts.length;
+  drawCanvas(); // Redraw the canvas after changing font
+}
+
+function toggleBold() {
+  isBold = !isBold;
+  document.getElementById('boldBtn').classList.toggle('active', isBold);
+  drawCanvas();
+}
+
+function toggleItalic() {
+  isItalic = !isItalic;
+  document.getElementById('italicBtn').classList.toggle('active', isItalic);
+  drawCanvas();
+}
+
+function toggleUnderline() {
+  isUnderline = !isUnderline;
+  document
+    .getElementById('underlineBtn')
+    .classList.toggle('active', isUnderline);
+  drawCanvas();
+}
+
+function downloadImage() {
+  const dataURL = canvas.toDataURL('image/jpeg');
+  const link = document.createElement('a');
+  link.href = dataURL;
+  link.download = uploadedFileName;
+  link.click();
+}
+
+// Mouse and Touch Event Handlers
+
 function handleMouseDown(e) {
   const mousePos = getMousePos(canvas, e);
   if (isOverText(mousePos)) {
     isDraggingText = true;
     textStartX = mousePos.x - textX;
     textStartY = mousePos.y - textY;
-  } else if (uploadedImage) {
+  } else if (uploadedImage && isOverImage(mousePos)) {
     isDraggingImage = true;
     imgStartX = mousePos.x;
     imgStartY = mousePos.y;
@@ -253,16 +316,6 @@ function handleMouseUp() {
   isDraggingImage = false;
 }
 
-function handleScroll(e) {
-  const scaleAmount = 0.1;
-  if (e.deltaY < 0) {
-    imgScale += scaleAmount;
-  } else if (e.deltaY > 0) {
-    imgScale = Math.max(0.1, imgScale - scaleAmount);
-  }
-  drawCanvas(); // Redraw the canvas after zooming
-}
-
 function handleTouchStart(e) {
   e.preventDefault();
   const touch = e.touches[0];
@@ -271,7 +324,7 @@ function handleTouchStart(e) {
     isDraggingText = true;
     textStartX = touchPos.x - textX;
     textStartY = touchPos.y - textY;
-  } else if (uploadedImage) {
+  } else if (uploadedImage && isOverImage(touchPos)) {
     isDraggingImage = true;
     imgStartX = touchPos.x;
     imgStartY = touchPos.y;
@@ -305,28 +358,33 @@ function handleTouchEnd() {
   isDraggingImage = false;
 }
 
+// Helper Functions
+
 function getMousePos(canvas, event) {
   const rect = canvas.getBoundingClientRect();
   return {
-    x: event.clientX - rect.left,
-    y: event.clientY - rect.top,
+    x:
+      ((event.clientX - rect.left) / (rect.right - rect.left)) * canvas.width,
+    y:
+      ((event.clientY - rect.top) / (rect.bottom - rect.top)) * canvas.height,
   };
 }
 
 function getTouchPos(canvas, touch) {
   const rect = canvas.getBoundingClientRect();
   return {
-    x: touch.clientX - rect.left,
-    y: touch.clientY - rect.top,
+    x:
+      ((touch.clientX - rect.left) / (rect.right - rect.left)) * canvas.width,
+    y:
+      ((touch.clientY - rect.top) / (rect.bottom - rect.top)) * canvas.height,
   };
 }
 
-function isOverText(mousePos) {
-  ctx.save(); // Save the current context state
+function isOverText(pos) {
+  ctx.save();
   ctx.translate(textX, textY);
   ctx.rotate(textRotation);
 
-  // Apply the current font settings
   let fontWeight = isBold ? 'bold' : 'normal';
   let fontStyle = isItalic ? 'italic' : 'normal';
   let currentFont = fonts[currentFontIndex];
@@ -336,18 +394,17 @@ function isOverText(mousePos) {
   const lineHeight = textSize * 1.2;
   const textHeight = lines.length * lineHeight;
   const maxLineWidth = Math.max(
-    ...lines.map((line) => ctx.measureText(line).width)
+    ...lines.map((line) => ctx.measureText(line.trim()).width)
   );
 
-  // Calculate mouse position relative to the rotated text
-  const dx = mousePos.x - textX;
-  const dy = mousePos.y - textY;
+  const dx = pos.x - textX;
+  const dy = pos.y - textY;
   const distance = Math.sqrt(dx * dx + dy * dy);
   const angle = Math.atan2(dy, dx) - textRotation;
   const x = distance * Math.cos(angle);
   const y = distance * Math.sin(angle);
 
-  ctx.restore(); // Restore the context to its original state
+  ctx.restore();
 
   return (
     x > -maxLineWidth / 2 &&
@@ -357,36 +414,28 @@ function isOverText(mousePos) {
   );
 }
 
-function nextFont() {
-  currentFontIndex = (currentFontIndex + 1) % fonts.length;
-  drawCanvas(); // Redraw the canvas after changing font
+function isOverImage(pos) {
+  const imgWidth = uploadedImage.width * imgScale;
+  const imgHeight = uploadedImage.height * imgScale;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+
+  const x = pos.x - (centerX - imgWidth / 2 + imgX);
+  const y = pos.y - (centerY - imgHeight / 2 + imgY);
+
+  return x >= 0 && x <= imgWidth && y >= 0 && y <= imgHeight;
 }
 
-function toggleBold() {
-  isBold = !isBold;
-  drawCanvas();
-}
+// Zoom functionality with mouse wheel
+canvas.addEventListener('wheel', handleScroll);
 
-function toggleItalic() {
-  isItalic = !isItalic;
-  drawCanvas();
-}
-
-function toggleUnderline() {
-  isUnderline = !isUnderline;
-  drawCanvas();
-}
-
-function rotateText() {
-  textRotation =
-    (document.getElementById('rotationSlider').value * Math.PI) / 180;
-  drawCanvas(); // Redraw the canvas after rotation change
-}
-
-function downloadImage() {
-  const dataURL = canvas.toDataURL('image/jpeg');
-  const link = document.createElement('a');
-  link.href = dataURL;
-  link.download = uploadedFileName;
-  link.click();
+function handleScroll(e) {
+  e.preventDefault();
+  const scaleAmount = 0.1;
+  if (e.deltaY < 0) {
+    imgScale += scaleAmount;
+  } else if (e.deltaY > 0) {
+    imgScale = Math.max(0.1, imgScale - scaleAmount);
+  }
+  drawCanvas(); // Redraw the canvas after zooming
 }
