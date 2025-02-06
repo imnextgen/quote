@@ -62,7 +62,7 @@ function loadImage(event) {
     image.onload = function () {
       uploadedImage = image;
       resetImagePosition();
-      drawCanvas();
+      drawCanvas(); // Redraw the canvas after image is loaded
     };
     image.src = imageData;
   };
@@ -107,15 +107,16 @@ function drawCanvas() {
     ctx.translate(textX, textY);
     ctx.rotate(textRotation);
 
-    ctx.fillStyle = textColor; // Use the updated text color
+    ctx.fillStyle = textColor; // Apply the updated text color
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
+    // Apply text style (size, font, and style)
     let fontStyle = styles[currentStyleIndex];
     let currentFont = fonts[currentFontIndex];
-    ctx.font = `${fontStyle} ${textSize}px '${currentFont}'`;
+    ctx.font = `${fontStyle} ${textSize}px '${currentFont}'`; // Use textSize here
 
     wrapAndDrawText(ctx, userText, 300);
 
@@ -163,12 +164,12 @@ function addText() {
 }
 
 function updateTextSize() {
-  textSize = document.getElementById('textSizeSlider').value;
+  textSize = document.getElementById('textSizeSlider').value; // Get updated text size from slider
   drawCanvas(); // Re-draw the canvas after updating text size
 }
 
 function updateTextColor() {
-  textColor = document.getElementById('textColorPicker').value;
+  textColor = document.getElementById('textColorPicker').value; // Get updated text color
   drawCanvas(); // Re-draw the canvas after updating text color
 }
 
@@ -190,7 +191,7 @@ function handleMouseMove(e) {
     const mousePos = getMousePos(canvas, e);
     textX = mousePos.x - textStartX;
     textY = mousePos.y - textStartY;
-    drawCanvas();
+    drawCanvas(); // Redraw the canvas when dragging the text
   } else if (isDraggingImage) {
     const mousePos = getMousePos(canvas, e);
     const dx = mousePos.x - imgStartX;
@@ -202,7 +203,7 @@ function handleMouseMove(e) {
     imgStartX = mousePos.x;
     imgStartY = mousePos.y;
 
-    drawCanvas();
+    drawCanvas(); // Redraw the canvas when dragging the image
   }
 }
 
@@ -218,7 +219,7 @@ function handleScroll(e) {
   } else if (e.deltaY > 0) {
     imgScale = Math.max(0.1, imgScale - scaleAmount);
   }
-  drawCanvas();
+  drawCanvas(); // Redraw the canvas after zooming
 }
 
 function handleTouchStart(e) {
@@ -254,7 +255,7 @@ function handleTouchMove(e) {
       imgStartX = touchPos.x;
       imgStartY = touchPos.y;
     }
-    drawCanvas();
+    drawCanvas(); // Redraw the canvas when dragging
   }
 }
 
@@ -286,17 +287,17 @@ function isOverText(mousePos) {
 
 function nextFont() {
   currentFontIndex = (currentFontIndex + 1) % fonts.length;
-  drawCanvas();
+  drawCanvas(); // Redraw the canvas after changing font
 }
 
 function nextStyle() {
   currentStyleIndex = (currentStyleIndex + 1) % styles.length;
-  drawCanvas();
+  drawCanvas(); // Redraw the canvas after changing style
 }
 
 function rotateText() {
   textRotation = document.getElementById('rotationSlider').value * (Math.PI / 180);
-  drawCanvas();
+  drawCanvas(); // Redraw the canvas after rotation change
 }
 
 function downloadImage() {
