@@ -9,7 +9,6 @@ let imgX = 0,
 let imgScale = 1;
 let isDraggingImage = false;
 let imgStartX, imgStartY;
-let lastDist = 0;
 
 let userText = '';
 let textX = canvas.width / 2;
@@ -140,29 +139,47 @@ function drawCanvas() {
 }
 
 function wrapAndDrawText(ctx, text, maxWidth) {
-  const words = text.split(' ');
-  const lines = [];
-  let currentLine = words[0];
-
-  for (let i = 1; i < words.length; i++) {
-    const word = words[i];
-    const width = ctx.measureText(currentLine + ' ' + word).width;
-    if (width < maxWidth) {
-      currentLine += ' ' + word;
-    } else {
-      lines.push(currentLine);
-      currentLine = word;
-    }
-  }
-  lines.push(currentLine);
-
+  const paragraphs = text.split('\n');
   const lineHeight = textSize * 1.2; // Dynamic line height
-  let y = -((lines.length - 1) * lineHeight) / 2;
+  let totalLines = 0;
+  const allLines = [];
 
-  lines.forEach((line) => {
-    ctx.strokeText(line, 0, y);
-    ctx.fillText(line, 0, y);
-    y += lineHeight;
+  // First, wrap each paragraph into lines
+  paragraphs.forEach((paragraph) => {
+    const words = paragraph.split(' ');
+    let lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = ctx.measureText(currentLine + ' ' + word).width;
+      if (width < maxWidth) {
+        currentLine += ' ' + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+    allLines.push(...lines);
+    totalLines += lines.length;
+    allLines.push('__NEW_PARAGRAPH__'); // Placeholder for paragraph break
+  });
+
+  // Remove the last placeholder
+  allLines.pop();
+
+  // Adjust starting y position to vertically center the text
+  let y = -((totalLines - 1) * lineHeight) / 2;
+
+  allLines.forEach((line) => {
+    if (line === '__NEW_PARAGRAPH__') {
+      y += lineHeight; // Add extra space for paragraph break
+    } else {
+      ctx.strokeText(line, 0, y);
+      ctx.fillText(line, 0, y);
+      y += lineHeight;
+    }
   });
 }
 
@@ -305,10 +322,11 @@ function isOverText(mousePos) {
   let currentFont = fonts[currentFontIndex];
   ctx.font = `${fontStyle} ${textSize}px '${currentFont}'`;
 
-  // Measure text dimensions
-  const textMetrics = ctx.measureText(userText);
-  const textWidth = textMetrics.width;
-  const textHeight = textSize; // Approximate height
+  // Approximate text dimensions
+  const lineHeight = textSize * 1.2;
+  const lines = userText.split('\n').length;
+  const textHeight = lineHeight * lines;
+  const textWidth = ctx.measureText(userText).width;
 
   // Calculate mouse position relative to the rotated text
   const dx = mousePos.x - textX;
