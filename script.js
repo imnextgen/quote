@@ -4,7 +4,8 @@ let uploadedFileName = 'quote-image.png';
 const canvas = document.getElementById('statusCanvas');
 const ctx = canvas.getContext('2d');
 
-let imgX = 0, imgY = 0;
+let imgX = 0,
+    imgY = 0;
 let imgScale = 1;
 let isDraggingImage = false;
 let imgStartX, imgStartY;
@@ -20,7 +21,15 @@ let textSize = 30; // Default text size
 let textColor = '#FFFFFF'; // Default text color
 
 let currentFontIndex = 0;
-const fonts = ['Arial', 'Roboto', 'Lobster', 'Montserrat', 'Oswald', 'Pacifico', 'Dancing Script'];
+const fonts = [
+  'Arial',
+  'Roboto',
+  'Lobster',
+  'Montserrat',
+  'Oswald',
+  'Pacifico',
+  'Dancing Script',
+];
 
 let currentStyleIndex = 0;
 const styles = ['normal', 'bold', 'italic', 'bold italic'];
@@ -43,9 +52,15 @@ document.getElementById('addTextBtn').addEventListener('click', addText);
 document.getElementById('nextFontBtn').addEventListener('click', nextFont);
 document.getElementById('nextStyleBtn').addEventListener('click', nextStyle);
 
-document.getElementById('rotationSlider').addEventListener('input', rotateText);
-document.getElementById('textSizeSlider').addEventListener('input', updateTextSize);
-document.getElementById('textColorPicker').addEventListener('input', updateTextColor);
+document
+  .getElementById('rotationSlider')
+  .addEventListener('input', rotateText);
+document
+  .getElementById('textSizeSlider')
+  .addEventListener('input', updateTextSize);
+document
+  .getElementById('textColorPicker')
+  .addEventListener('input', updateTextColor);
 document.getElementById('downloadBtn').addEventListener('click', downloadImage);
 
 function loadImage(event) {
@@ -141,7 +156,7 @@ function wrapAndDrawText(ctx, text, maxWidth) {
   }
   lines.push(currentLine);
 
-  const lineHeight = 35;
+  const lineHeight = textSize * 1.2; // Dynamic line height
   let y = -((lines.length - 1) * lineHeight) / 2;
 
   lines.forEach((line) => {
@@ -164,12 +179,12 @@ function addText() {
 }
 
 function updateTextSize() {
-  textSize = document.getElementById('textSizeSlider').value; // Get updated text size from slider
+  textSize = parseInt(document.getElementById('textSizeSlider').value, 10);
   drawCanvas(); // Re-draw the canvas after updating text size
 }
 
 function updateTextColor() {
-  textColor = document.getElementById('textColorPicker').value; // Get updated text color
+  textColor = document.getElementById('textColorPicker').value;
   drawCanvas(); // Re-draw the canvas after updating text color
 }
 
@@ -281,8 +296,36 @@ function getTouchPos(canvas, touch) {
 }
 
 function isOverText(mousePos) {
-  const textWidth = ctx.measureText(userText).width;
-  return mousePos.x > textX - textWidth / 2 && mousePos.x < textX + textWidth / 2 && mousePos.y > textY - textSize / 2 && mousePos.y < textY + textSize / 2;
+  ctx.save(); // Save the current context state
+  ctx.translate(textX, textY);
+  ctx.rotate(textRotation);
+
+  // Apply the current font settings
+  let fontStyle = styles[currentStyleIndex];
+  let currentFont = fonts[currentFontIndex];
+  ctx.font = `${fontStyle} ${textSize}px '${currentFont}'`;
+
+  // Measure text dimensions
+  const textMetrics = ctx.measureText(userText);
+  const textWidth = textMetrics.width;
+  const textHeight = textSize; // Approximate height
+
+  // Calculate mouse position relative to the rotated text
+  const dx = mousePos.x - textX;
+  const dy = mousePos.y - textY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  const angle = Math.atan2(dy, dx) - textRotation;
+  const x = distance * Math.cos(angle);
+  const y = distance * Math.sin(angle);
+
+  ctx.restore(); // Restore the context to its original state
+
+  return (
+    x > -textWidth / 2 &&
+    x < textWidth / 2 &&
+    y > -textHeight / 2 &&
+    y < textHeight / 2
+  );
 }
 
 function nextFont() {
@@ -296,7 +339,8 @@ function nextStyle() {
 }
 
 function rotateText() {
-  textRotation = document.getElementById('rotationSlider').value * (Math.PI / 180);
+  textRotation =
+    (document.getElementById('rotationSlider').value * Math.PI) / 180;
   drawCanvas(); // Redraw the canvas after rotation change
 }
 
