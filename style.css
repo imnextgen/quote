@@ -1,37 +1,24 @@
 /* General Styles */
 body {
   font-family: 'Montserrat', sans-serif;
-  background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%);
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
   position: relative;
   margin: 0;
   padding: 0;
-  color: #444;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  pointer-events: none;
+  color: #fff; /* Set text color to white for contrast */
 }
 
 /* Navigation Bar */
 nav {
   background-color: transparent;
   padding: 10px 20px;
-  /* Optionally add a subtle shadow */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 nav .logo {
   font-family: 'Playfair Display', serif;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
-  color: #fff; /* Adjust text color for contrast */
+  color: #fff; /* White color for logo text */
 }
 
 /* Container */
@@ -39,7 +26,200 @@ nav .logo {
   max-width: 800px;
   margin: 40px auto;
   text-align: center;
-  color: #fff; /* Adjust text color for contrast */
 }
 
-/* ... Rest of your CSS, ensuring text is readable against the background ... */
+/* Heading */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  margin-bottom: 30px;
+  color: #fff; /* White color for heading */
+}
+
+/* Canvas Container */
+#canvasContainer {
+  position: relative;
+  width: 360px;
+  height: 640px;
+  margin: 0 auto 20px;
+  border: 1px solid #ddd;
+  background-color: #fff; /* White background for canvas */
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#statusCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Upload Button */
+#uploadBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  border-radius: 50px;
+  background-color: rgba(0,123,255,0.9);
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+#uploadBtn i {
+  margin-right: 8px;
+}
+
+#imageUpload {
+  display: none;
+}
+
+/* Quote Input */
+#quoteText {
+  width: 80%;
+  height: 100px;
+  margin: 20px auto;
+  padding: 15px;
+  font-size: 16px;
+  resize: vertical;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  color: #333;
+}
+
+/* Text and Styling Controls */
+.text-controls,
+.styling-controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.text-controls button,
+.styling-controls button {
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 50px;
+  background-color: #007bff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.text-controls button i,
+.styling-controls button i {
+  margin-right: 5px;
+}
+
+.text-controls button:hover,
+.styling-controls button:hover {
+  background-color: #0056b3;
+}
+
+.text-controls button.active,
+.styling-controls button.active {
+  background-color: #28a745;
+}
+
+/* Slider and Color Picker Controls */
+.slider-controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.slider-group,
+.color-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider-group label,
+.color-picker-group label {
+  font-size: 16px;
+  color: #fff; /* White color for labels */
+}
+
+#textSizeSlider,
+#rotationSlider {
+  width: 150px;
+}
+
+#textColorPicker {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+}
+
+/* Download Button */
+#downloadBtn {
+  padding: 12px 25px;
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 50px;
+  background-color: #28a745;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+#downloadBtn i {
+  margin-right: 8px;
+}
+
+#downloadBtn:hover {
+  background-color: #218838;
+}
+
+/* Hide the upload button when an image is loaded */
+#canvasContainer.image-loaded #uploadBtn {
+  display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  #canvasContainer {
+    width: 90%;
+    height: auto;
+  }
+
+  #statusCanvas {
+    width: 100%;
+    height: auto;
+  }
+
+  .slider-controls {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .slider-group,
+  .color-picker-group {
+    justify-content: center;
+  }
+
+  #quoteText {
+    width: 90%;
+  }
+
+  #downloadBtn {
+    margin: 20px auto;
+  }
+}
