@@ -1,11 +1,24 @@
 /* General Styles */
 body {
   font-family: 'Montserrat', sans-serif;
-  background-color: #e6e9f0;
+  background: url('images/background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  position: relative;
   margin: 0;
   padding: 0;
   color: #444;
-  background: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%);
+}
+
+/* Optional Overlay */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
 }
 
 /* Navigation Bar */
@@ -21,19 +34,25 @@ nav .logo {
   color: #333;
 }
 
-/* Container */
-.container {
-  max-width: 800px;
-  margin: 40px auto;
+/* Header Styles */
+header {
   text-align: center;
+  padding: 60px 20px 40px;
 }
 
-/* Heading */
-h1 {
+header h1 {
   font-family: 'Playfair Display', serif;
-  font-size: 36px;
-  margin-bottom: 30px;
+  font-size: 48px;
   color: #333;
+  margin: 0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 32px;
+  }
 }
 
 /* Canvas Container */
@@ -119,9 +138,8 @@ h1 {
   color: #333;
 }
 
-/* Text and Styling Controls */
-.text-controls,
-.styling-controls {
+/* Text Controls */
+.text-controls {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -129,38 +147,81 @@ h1 {
   margin-bottom: 20px;
 }
 
-.text-controls button,
-.styling-controls button {
+.text-controls button {
   padding: 10px 15px;
   font-size: 18px;
   cursor: pointer;
   border: none;
   border-radius: 8px;
-  background-color: #f1f1f1;
-  color: #333;
+  background-color: #007bff;
+  color: #fff;
   display: flex;
   align-items: center;
-  transition: background-color 0.3s ease;
 }
 
-.text-controls button i,
-.styling-controls button i {
+.text-controls button i {
   margin-right: 5px;
 }
 
-.text-controls button:hover,
+/* Styling Controls */
+.styling-controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.styling-controls button {
+  padding: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  border-radius: 50%;
+  background-color: #f1f1f1;
+  color: #333;
+  width: 50px;
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
 .styling-controls button:hover {
   background-color: #007bff;
   color: #fff;
 }
 
-.text-controls button.active,
 .styling-controls button.active {
-  background-color: #007bff;
+  background-color: #28a745;
   color: #fff;
 }
 
-/* Sliders and Color Picker Controls */
+/* Tooltip */
+.styling-controls button::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.styling-controls button:hover::after {
+  opacity: 1;
+}
+
+/* Slider and Color Picker Controls */
 .slider-controls {
   display: flex;
   justify-content: center;
@@ -216,11 +277,6 @@ h1 {
 
 #downloadBtn:hover {
   background-color: #218838;
-}
-
-/* Hide the upload button when an image is loaded */
-#canvasContainer.image-loaded #uploadBtn {
-  display: none;
 }
 
 /* Responsive Design */
