@@ -67,7 +67,7 @@ function loadImage(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  uploadedFileName = file.name || 'quote-image.png';
+  uploadedFileName = file.name || 'quote-image.jpeg';
 
   const reader = new FileReader();
 
@@ -347,7 +347,7 @@ function rotateText() {
 }
 
 function downloadImage() {
-  const dataURL = canvas.toDataURL('image/png');
+  const dataURL = canvas.toDataURL('image/jpeg');
   const link = document.createElement('a');
   link.href = dataURL;
   link.download = uploadedFileName;
