@@ -30,8 +30,11 @@ const fonts = [
   'Dancing Script',
 ];
 
+let currentWeightIndex = 0;
+const fontWeights = ['normal', 'bold'];
+
 let currentStyleIndex = 0;
-const styles = ['normal', 'bold', 'italic', 'bold italic'];
+const fontStyles = ['normal', 'italic'];
 
 // Event Listeners
 document.getElementById('imageUpload').addEventListener('change', loadImage);
@@ -49,6 +52,7 @@ canvas.addEventListener('touchend', handleTouchEnd);
 
 document.getElementById('addTextBtn').addEventListener('click', addText);
 document.getElementById('nextFontBtn').addEventListener('click', nextFont);
+document.getElementById('nextWeightBtn').addEventListener('click', nextWeight);
 document.getElementById('nextStyleBtn').addEventListener('click', nextStyle);
 
 document
@@ -127,10 +131,11 @@ function drawCanvas() {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Apply text style (size, font, and style)
-    let fontStyle = styles[currentStyleIndex];
+    // Apply text style (size, font, weight, and style)
+    let fontWeight = fontWeights[currentWeightIndex];
+    let fontStyle = fontStyles[currentStyleIndex];
     let currentFont = fonts[currentFontIndex];
-    ctx.font = `${fontStyle} ${textSize}px '${currentFont}'`; // Use textSize here
+    ctx.font = `${fontStyle} ${fontWeight} ${textSize}px '${currentFont}'`;
 
     wrapAndDrawText(ctx, userText, canvas.width * 0.8); // Adjust maxWidth as needed
 
@@ -165,8 +170,7 @@ function wrapAndDrawText(context, text, maxWidth) {
   });
 
   // Adjust starting Y position to center text vertically
-  let y =
-    (-lines.length / 2) * lineHeight + lineHeight / 2;
+  let y = (-lines.length / 2) * lineHeight + lineHeight / 2;
 
   // Draw each line of text
   lines.forEach((line) => {
@@ -311,9 +315,10 @@ function isOverText(mousePos) {
   ctx.rotate(textRotation);
 
   // Apply the current font settings
-  let fontStyle = styles[currentStyleIndex];
+  let fontWeight = fontWeights[currentWeightIndex];
+  let fontStyle = fontStyles[currentStyleIndex];
   let currentFont = fonts[currentFontIndex];
-  ctx.font = `${fontStyle} ${textSize}px '${currentFont}'`;
+  ctx.font = `${fontStyle} ${fontWeight} ${textSize}px '${currentFont}'`;
 
   const lines = userText.split('\n');
   const lineHeight = textSize * 1.2;
@@ -345,8 +350,13 @@ function nextFont() {
   drawCanvas(); // Redraw the canvas after changing font
 }
 
+function nextWeight() {
+  currentWeightIndex = (currentWeightIndex + 1) % fontWeights.length;
+  drawCanvas(); // Redraw the canvas after changing weight
+}
+
 function nextStyle() {
-  currentStyleIndex = (currentStyleIndex + 1) % styles.length;
+  currentStyleIndex = (currentStyleIndex + 1) % fontStyles.length;
   drawCanvas(); // Redraw the canvas after changing style
 }
 
