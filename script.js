@@ -30,11 +30,9 @@ const fonts = [
   'Dancing Script',
 ];
 
-let currentWeightIndex = 0;
-const fontWeights = ['normal', 'bold'];
-
-let currentStyleIndex = 0;
-const fontStyles = ['normal', 'italic'];
+let isBold = false;
+let isItalic = false;
+let isUnderline = false;
 
 // Event Listeners
 document.getElementById('imageUpload').addEventListener('change', loadImage);
@@ -52,8 +50,10 @@ canvas.addEventListener('touchend', handleTouchEnd);
 
 document.getElementById('addTextBtn').addEventListener('click', addText);
 document.getElementById('nextFontBtn').addEventListener('click', nextFont);
-document.getElementById('nextWeightBtn').addEventListener('click', nextWeight);
-document.getElementById('nextStyleBtn').addEventListener('click', nextStyle);
+
+document.getElementById('boldBtn').addEventListener('click', toggleBold);
+document.getElementById('italicBtn').addEventListener('click', toggleItalic);
+document.getElementById('underlineBtn').addEventListener('click', toggleUnderline);
 
 document
   .getElementById('rotationSlider')
@@ -132,8 +132,8 @@ function drawCanvas() {
     ctx.textBaseline = 'middle';
 
     // Apply text style (size, font, weight, and style)
-    let fontWeight = fontWeights[currentWeightIndex];
-    let fontStyle = fontStyles[currentStyleIndex];
+    let fontWeight = isBold ? 'bold' : 'normal';
+    let fontStyle = isItalic ? 'italic' : 'normal';
     let currentFont = fonts[currentFontIndex];
     ctx.font = `${fontStyle} ${fontWeight} ${textSize}px '${currentFont}'`;
 
@@ -176,6 +176,18 @@ function wrapAndDrawText(context, text, maxWidth) {
   lines.forEach((line) => {
     context.fillText(line.trim(), 0, y);
     context.strokeText(line.trim(), 0, y);
+
+    // Underline
+    if (isUnderline) {
+      const textWidth = context.measureText(line.trim()).width;
+      context.beginPath();
+      context.moveTo(-textWidth / 2, y + lineHeight / 4);
+      context.lineTo(textWidth / 2, y + lineHeight / 4);
+      context.lineWidth = 2;
+      context.strokeStyle = textColor;
+      context.stroke();
+    }
+
     y += lineHeight;
   });
 }
@@ -315,8 +327,8 @@ function isOverText(mousePos) {
   ctx.rotate(textRotation);
 
   // Apply the current font settings
-  let fontWeight = fontWeights[currentWeightIndex];
-  let fontStyle = fontStyles[currentStyleIndex];
+  let fontWeight = isBold ? 'bold' : 'normal';
+  let fontStyle = isItalic ? 'italic' : 'normal';
   let currentFont = fonts[currentFontIndex];
   ctx.font = `${fontStyle} ${fontWeight} ${textSize}px '${currentFont}'`;
 
@@ -350,14 +362,19 @@ function nextFont() {
   drawCanvas(); // Redraw the canvas after changing font
 }
 
-function nextWeight() {
-  currentWeightIndex = (currentWeightIndex + 1) % fontWeights.length;
-  drawCanvas(); // Redraw the canvas after changing weight
+function toggleBold() {
+  isBold = !isBold;
+  drawCanvas();
 }
 
-function nextStyle() {
-  currentStyleIndex = (currentStyleIndex + 1) % fontStyles.length;
-  drawCanvas(); // Redraw the canvas after changing style
+function toggleItalic() {
+  isItalic = !isItalic;
+  drawCanvas();
+}
+
+function toggleUnderline() {
+  isUnderline = !isUnderline;
+  drawCanvas();
 }
 
 function rotateText() {
