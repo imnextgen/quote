@@ -1,3 +1,5 @@
+// script.js
+
 // Variables for image handling
 let uploadedImage = null;
 let uploadedFileName = 'quote-image.jpeg';
@@ -41,7 +43,6 @@ const fonts = [
 // Multi-touch variables for pinch-to-zoom
 let initialDistance = 0;
 let initialScale = 1;
-let lastTouchEnd = 0;
 
 // Event Listeners
 
@@ -114,10 +115,32 @@ function loadImage(event) {
   reader.readAsDataURL(file);
 }
 
+// Updated resetImagePosition function
 function resetImagePosition() {
   imgX = 0;
   imgY = 0;
-  imgScale = 1;
+
+  const canvasAspectRatio = canvas.width / canvas.height;
+  const imageAspectRatio = uploadedImage.width / uploadedImage.height;
+
+  if (
+    uploadedImage.width <= canvas.width &&
+    uploadedImage.height <= canvas.height
+  ) {
+    // Image is smaller than canvas; display at original size
+    imgScale = 1;
+  } else {
+    // Scale down the image to fit within the canvas
+    if (imageAspectRatio > canvasAspectRatio) {
+      imgScale = canvas.width / uploadedImage.width;
+    } else {
+      imgScale = canvas.height / uploadedImage.height;
+    }
+  }
+
+  // Center the image
+  imgX = 0;
+  imgY = 0;
 }
 
 function drawCanvas() {
